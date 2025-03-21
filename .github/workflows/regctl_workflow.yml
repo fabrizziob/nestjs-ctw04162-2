@@ -24,6 +24,6 @@ jobs:
     steps:
       - uses: fabrizziob/setup-regctl-ctw04162@main
         with:
-          version: '0.8.2'
+          version: 'v0.8.2'
           arch: 'amd64'
           
