@@ -6,6 +6,18 @@ on:
       - main
 
 jobs:
+  os_matrix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        version: [16, 18, 20]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
   app-setup:
     name: Application Setup
     runs-on: ubuntu-latest
@@ -17,7 +29,8 @@ jobs:
       - name: Setup Node.Js Env
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: ${{ matrix.version }}
+          cache: 'npm'  # NPM Caching for faster dependency installs.
     
     # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
       - name: Cache node modules
@@ -47,7 +60,16 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Audit
+        run: npm run audit
       
+      - name: Download production artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: Build-${{ matrix.os }}-dist-${{ github.ref_name }}
+          path: build
+    
   run-linter:
       name: Run Linter
       runs-on: ubuntu-latest
@@ -59,10 +81,30 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: ${{ matrix.version }}
 
       # ESLint must be in `package.json`
       - name: Install Node.js dependencies
         run: npm ci
-
       - run: npm run lint
+      - run: npm run audit
+  
+  deploy-github-page:
+      # Add a dependency to the build job
+      needs: app-setup
+
+      # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+      permissions:
+        pages: write      
+        id-token: write
+
+      # Deploy to the github-pages environment
+      environment:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
+
+      runs-on: ubuntu-latest
+      steps:
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v4 
