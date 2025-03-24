@@ -5,31 +5,29 @@ on:
     branches:
       - main
 
+
 jobs:
+  checkout:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+            sparse-checkout: .
+            ref: main
+        
   os_matrix:
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         version: [16, 18, 20]
     runs-on: ${{ matrix.os }}
-
-  # checkout:
-  #   runs-on: self-hosted
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #           sparse-checkout: .
-  #           ref: main
-
-  # build:
-  #   permissions:
-  #       contents: read
-  #       packages: write
-  #       attestations: write
-  #       id-token: write
-     
-  #   runs-on: self-hosted
+  
 
     steps:
       - name: Checkout
@@ -42,23 +40,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.version }}
-          cache: 'npm'
+          cache: 'npm'  # NPM Caching for faster dependency installs.
       - run: npm ci
       - run: npm run build --if-present
       #- run: npm test
         
-      # # ESLint and Prettier must be in `package.json`
-      # - name: Install Node.js dependencies
-      #   run: npm ci
-      
       # - name: Run linters
       #   uses: wearerequired/lint-action@v2
       #   with:
       #     eslint: true
       #     prettier: true
-  
-      # - name: Run tests
-      #   run: npm test
 
       - name: Cache docker layers
         uses: actions/cache@v4
