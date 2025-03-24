@@ -59,7 +59,7 @@ jobs:
         run: npm test
       
       - name: Lint
-        run: npm run lint
+        run: npx eslint
 
       - name: Audit
         run: npm run audit
