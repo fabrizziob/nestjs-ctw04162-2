@@ -34,8 +34,6 @@ jobs:
                 path: dist
                 retention-days: 3
             
-
-    
     download_artifact:
         needs: build_and_test
 
@@ -49,6 +47,6 @@ jobs:
               uses: actions/download-artifact@v4
               with:
                 name: Build-${{ matrix.os }}-dist${{ GITHUB.head_ref }}
-                path: build
+
 
         
