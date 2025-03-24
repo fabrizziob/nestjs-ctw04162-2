@@ -18,5 +18,8 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "rootDir": "./src"
-  }
+  },
+
+  "exclude": ["app.controller.d.ts"]
+
 }
