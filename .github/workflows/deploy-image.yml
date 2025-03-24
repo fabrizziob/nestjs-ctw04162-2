@@ -38,6 +38,12 @@ jobs:
       #   if: matrix.os == 'ubuntu-latest' && matrix.version == 18
       #   uses: actions/setup-node@v4
       # - run: npm test
+      
+      - name: Check PATH
+        run: echo $PATH
+      
+      - name: Check Docker installation
+        run: docker --version
 
       - name: Cache docker layers
         uses: actions/cache@v4
