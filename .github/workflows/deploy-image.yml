@@ -39,7 +39,9 @@ jobs:
       #   with:
       #     eslint: true
       #     prettier: true
-
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        
       - name: Cache docker layers
         uses: actions/cache@v4
         with:
