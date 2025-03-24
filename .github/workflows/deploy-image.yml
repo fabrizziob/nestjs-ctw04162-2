@@ -6,25 +6,57 @@ on:
       - main
 
 jobs:
-  checkout:
-    runs-on: self-hosted
+  os_matrix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        version: [16, 18, 20]
+    runs-on: ${{ matrix.os }}
+
+  # checkout:
+  #   runs-on: self-hosted
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #           sparse-checkout: .
+  #           ref: main
+
+  # build:
+  #   permissions:
+  #       contents: read
+  #       packages: write
+  #       attestations: write
+  #       id-token: write
+     
+  #   runs-on: self-hosted
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
             sparse-checkout: .
             ref: main
+      
+      - name: Set up Node.js ${{ matrix.version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.version }}
+          cache: 'npm'
+      
+      # ESLint and Prettier must be in `package.json`
+      - name: Install Node.js dependencies
+        run: npm ci
+      
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          eslint: true
+          prettier: true
+  
+      - name: Run tests
+        run: npm test
 
-  build:
-    permissions:
-        contents: read
-        packages: write
-        attestations: write
-        id-token: write
-     
-    runs-on: self-hosted
-
-    steps:
       - name: Cache docker layers
         uses: actions/cache@v4
         with:
@@ -32,7 +64,7 @@ jobs:
           key: ${{ runner.os }}-docker-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-docker-
-  
+      
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
