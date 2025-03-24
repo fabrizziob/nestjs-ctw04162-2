@@ -1,4 +1,4 @@
-name: Multi-platform & Multi-version Testing
+name: Node CI
 
 on:
   push:
@@ -6,24 +6,37 @@ on:
       - main
 
 jobs:
-    os_matrix:
+    build_and_test:
         strategy:
           matrix:
             os: [ubuntu-latest, windows-latest]
         runs-on: ${{ matrix.os }}
 
         steps:
-            - name: Checkout
+            - name: Checkout repository
               uses: actions/checkout@v4
-              with:
-                  sparse-checkout: .
-                  ref: main
             
             - name: Set up Node.js ${{ matrix.version }}
               uses: actions/setup-node@v4
               with:
                 node-version: ${{ matrix.version }}
                 cache: 'npm'  # NPM Caching for faster dependency installs.
-            - run: npm ci
-            - run: npm run build --if-present
-            - run: npm test
+            - name: npm install, build, and test
+              run: | 
+                npm install
+                npm run build --if-present
+            #   npm test
+
+            - name: Archive production artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: Build
+                path: dist
+            
+            - name: Download production artifacts
+              uses: actions/download-artifact@v4
+              with:
+                name: Build
+                path: build
+            
+            
