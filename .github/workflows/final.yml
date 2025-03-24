@@ -7,6 +7,7 @@ on:
 
 jobs:
   app-setup:
+    name: Application Setup
     runs-on: ubuntu-latest
 
     steps:
@@ -48,7 +49,7 @@ jobs:
         run: npm test
       
   run-linter:
-      name: Run linter
+      name: Run Linter
       runs-on: ubuntu-latest
 
       steps:
