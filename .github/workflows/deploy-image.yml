@@ -34,40 +34,40 @@ jobs:
       - run: npm run build --if-present
       - run: npm test
 
-      - name: Set up Node.js v17
+      - name: Set up Node.js v18
         if: matrix.os == 'ubuntu-latest' && matrix.version == 18
         uses: actions/setup-node@v4
       - run: npm test
 
-      # - name: Cache docker layers
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: /tmp/.docker-cache
-      #     key: ${{ runner.os }}-docker-${{ github.sha }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-docker-
+      - name: Cache docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.docker-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
       
-      # - name: Login to Docker Hub
-      #   uses: docker/login-action@v3
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Set up Docker Buildx
-      #   uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       
-      # - name: Build and push
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     push: true
-      #     cache-from: type=local,src=/tmp/.docker-cache
-      #     cache-to: type=local,dest=/tmp/.docker-cache-new
-      #     tags: ghcr.io/${{ github.repository }}:latest
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          cache-from: type=local,src=/tmp/.docker-cache
+          cache-to: type=local,dest=/tmp/.docker-cache-new
+          tags: ghcr.io/${{ github.repository }}:latest
       
-      # - name: Move cache
-      #   run: |
-      #     rm -rf /tmp/.docker-cache
-      #     mv /tmp/.docker-cache-new /tmp/.docker-cache
-      #   shell: bash
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.docker-cache
+          mv /tmp/.docker-cache-new /tmp/.docker-cache
+        shell: bash
 
