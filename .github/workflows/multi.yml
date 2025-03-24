@@ -6,54 +6,54 @@ on:
       - main
 
 jobs:
-    build_and_test:
-        strategy:
+  build_and_test:
+      strategy:
+        matrix:
+          os: [ubuntu-latest, windows-latest]
+      runs-on: ${{ matrix.os }}
+
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+          
+          - name: Set up Node.js ${{ matrix.version }}
+            uses: actions/setup-node@v4
+            with:
+              node-version: ${{ matrix.version }}
+              cache: 'npm'  # NPM Caching for faster dependency installs.
+          - name: npm install, build, and test
+            run: | 
+              npm install
+              npm run build --if-present
+          #   npm test
+
+          - name: Archive production artifacts
+            uses: actions/upload-artifact@v4
+            with:
+              name: Build-${{ matrix.os }}-dist-${{ github.ref_name }}
+              path: dist
+              retention-days: 3
+          
+  download_artifact:
+      needs: build_and_test
+
+      strategy:
           matrix:
             os: [ubuntu-latest, windows-latest]
-        runs-on: ${{ matrix.os }}
+      runs-on: ${{ matrix.os }}
+      
+      steps:
+          - name: Download production artifacts
+            uses: actions/download-artifact@v4
+            with:
+              name: Build-${{ matrix.os }}-dist-${{ github.ref_name }}
+              path: build
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-            
-            - name: Set up Node.js ${{ matrix.version }}
-              uses: actions/setup-node@v4
-              with:
-                node-version: ${{ matrix.version }}
-                cache: 'npm'  # NPM Caching for faster dependency installs.
-            - name: npm install, build, and test
-              run: | 
-                npm install
-                npm run build --if-present
-            #   npm test
+          - run: ls build/
 
-            - name: Archive production artifacts
-              uses: actions/upload-artifact@v4
-              with:
-                name: Build-${{ matrix.os }}-dist-${{ github.ref_name }}
-                path: dist
-                retention-days: 3
-            
-    download_artifact:
-        needs: build_and_test
-
-        strategy:
-            matrix:
-              os: [ubuntu-latest, windows-latest]
-        runs-on: ${{ matrix.os }}
-        
-        steps:
-            - name: Download production artifacts
-              uses: actions/download-artifact@v4
-              with:
-                name: Build-${{ matrix.os }}-dist-${{ github.ref_name }}
-                path: build
-
-            - run: ls build/
-
-            - name: Check file existence
-              id: check_files
-              uses: andstor/file-existence-action@v3
-              with:
-                files: "build/*"
-            
+          - name: Check file existence
+            id: check_files
+            uses: andstor/file-existence-action@v3
+            with:
+              files: "build/*"
+          
