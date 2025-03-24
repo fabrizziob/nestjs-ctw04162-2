@@ -20,6 +20,4 @@
     "rootDir": "./src"
   },
 
-  "exclude": ["dist/app.controller.d.ts"]
-
 }
