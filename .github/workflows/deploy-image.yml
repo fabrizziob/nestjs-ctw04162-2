@@ -9,7 +9,7 @@ jobs:
   os_matrix:
     strategy:
       matrix:
-        os: [ubuntu-, macos, windows-latest]
+        os: [ubuntu, macos, windows]
         version: [16, 18, 20]
     runs-on: ${{ matrix.os }}
     permissions:
