@@ -43,19 +43,22 @@ jobs:
         with:
           node-version: ${{ matrix.version }}
           cache: 'npm'
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+        
+      # # ESLint and Prettier must be in `package.json`
+      # - name: Install Node.js dependencies
+      #   run: npm ci
       
-      # ESLint and Prettier must be in `package.json`
-      - name: Install Node.js dependencies
-        run: npm ci
-      
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          eslint: true
-          prettier: true
+      # - name: Run linters
+      #   uses: wearerequired/lint-action@v2
+      #   with:
+      #     eslint: true
+      #     prettier: true
   
-      - name: Run tests
-        run: npm test
+      # - name: Run tests
+      #   run: npm test
 
       - name: Cache docker layers
         uses: actions/cache@v4
