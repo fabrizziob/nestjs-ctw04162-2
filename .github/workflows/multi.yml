@@ -48,7 +48,8 @@ jobs:
               with:
                 name: Build-${{ matrix.os }}-dist-${{ github.head_ref }}
                 path: build
-
+            - run: ls
+            
             - name: Check file existence
               id: check_files
               uses: andstor/file-existence-action@v3
