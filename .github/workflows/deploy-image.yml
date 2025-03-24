@@ -5,30 +5,19 @@ on:
     branches:
       - main
 
-
 jobs:
-  checkout:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-            sparse-checkout: .
-            ref: main
-        
   os_matrix:
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         version: [16, 18, 20]
     runs-on: ${{ matrix.os }}
-  
-
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
