@@ -82,6 +82,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: os_matrix
 
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        version: [18, 20]
+
     permissions:
       pages: write
       id-token: write
