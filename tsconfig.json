@@ -20,6 +20,6 @@
     "rootDir": "./src"
   },
 
-  "exclude": ["./nestjs-ctw04162-2/dist/app.controller.d.ts"]
+  "exclude": ["dist/app.controller.d.ts"]
 
 }
