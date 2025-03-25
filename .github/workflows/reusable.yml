@@ -1,0 +1,46 @@
+name: Lint, audit and test the application
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      run-tests:
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  setup-and-build:
+    name: Setup, Build, Lint and Audit Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build the Application
+        run: npm run build
+
+  lint-and-audit:
+    name: Lint and Audit the application
+    runs-on: ubuntu-latest
+    needs: setup-and-build
+
+    steps:
+      - name: Lint the Application
+        run: npm run lint
+      
+      - name: Audit the Application
+        run: npm audit
+
+  test:
+    name: Test the application
+    if: ${{ inputs.run-tests }}
+    runs-on: ubuntu-latest
+    needs: setup-and-build
+
+    steps:
+      - name: Run Tests
+        run: npm test
